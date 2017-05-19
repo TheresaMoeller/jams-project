@@ -2,15 +2,14 @@
  * JAMS example component - can be used as template for new components
  */
 
-import jams.data.*;
-import jams.model.*;
-
 /**
  *
  * @author Theresa
  */
+
 import jams.data.*;
 import jams.model.*;
+import Input.InputData;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,9 +17,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.text.BreakIterator;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.util.List;
 
 
 @JAMSComponentDescription(
@@ -39,10 +38,10 @@ public class DataReader extends JAMSComponent {
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
             description = "Input data file")
     public static Attribute.String filePath;
-
+    
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,
             description = "Month")
-    public static Attribute.Double month;
+    public static Attribute.String date;
     
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,
             description = "Precip value read from file")
@@ -76,7 +75,7 @@ public class DataReader extends JAMSComponent {
             description = "windspeed value read from file")
     public static Attribute.Double windspeed;
 
-    static ArrayList<double[]> data = new ArrayList<double[]>();
+    static List<InputData> data = new ArrayList<InputData>();
     static int counter = 0;
 
     /*
@@ -115,24 +114,27 @@ public class DataReader extends JAMSComponent {
                         line.startsWith("2") | 
                         line.startsWith("3")){
                     StringTokenizer st = new StringTokenizer(line);
-                    double dataset[] = new double[9];
-                    int x = 1;
-                    String token = st.nextToken().split(".")[1];
+                    InputData dataset = new InputData();
+                    int x = 0;
+                    String token = st.nextToken();//.split(".")[1];
+                    List<Double> val = new ArrayList<Double>();
+                    dataset.setDate(token);
                     //Monat auslesen
-                    if (token.startsWith("0")){
-                        CharacterIterator cIter = new StringCharacterIterator(token) ;
-                        char ch = cIter.last() ;
-                        dataset[0] = (double) Character.digit(ch, 10);
-                    } else {
-                        dataset[0] = Double.parseDouble(token);
-                    }
+//                    if (token.startsWith("0")){
+//                        CharacterIterator cIter = new StringCharacterIterator(token) ;
+//                        char ch = cIter.last() ;
+//                        dataset[0] = (double) Character.digit(ch, 10);
+//                    } else {
+//                        dataset[0] = Double.parseDouble(token);
+//                    }
                     //Bis zum Ende der Zeile trage alle Werte einzeln in die Liste dataset ein
                     while(st.hasMoreTokens()){
                         token = st.nextToken();
-                        dataset[x] = Double.parseDouble(token);
+                        val.add(Double.parseDouble(token));
                         x++;
                     }
                     //Füge die Liste zur ArrayList hinzu
+                    dataset.setValues(val);
                     data.add(dataset);
                 } 
             } 
@@ -157,15 +159,15 @@ public class DataReader extends JAMSComponent {
          * Set Values from file as given values for modelling
          ***/
         
-        month.setValue(data.get(counter)[0]);
-        precip.setValue(data.get(counter)[1]);
-        mintemp.setValue(data.get(counter)[2]);
-        meantemp.setValue(data.get(counter)[3]);
-        maxtemp.setValue(data.get(counter)[4]);
-        sunshine.setValue(data.get(counter)[5]);
-        relhum.setValue(data.get(counter)[6]);
-        abshum.setValue(data.get(counter)[7]);
-        windspeed.setValue(data.get(counter)[8]);
+        date.setValue(data.get(counter).getDate());
+        precip.setValue(data.get(counter).getValues().get(0));
+        mintemp.setValue(data.get(counter).getValues().get(1));
+        meantemp.setValue(data.get(counter).getValues().get(2));
+        maxtemp.setValue(data.get(counter).getValues().get(3));
+        sunshine.setValue(data.get(counter).getValues().get(4));
+        relhum.setValue(data.get(counter).getValues().get(5));
+        abshum.setValue(data.get(counter).getValues().get(6));
+        windspeed.setValue(data.get(counter).getValues().get(7));
         counter++;
     }
 
