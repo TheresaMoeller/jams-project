@@ -34,9 +34,17 @@ public class DataWriter extends JAMSComponent {
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
             description = "Precip value read from file")
     public static Attribute.Double precip;
+    
+    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
+            description = "Soil storage value read from file")
+    public static Attribute.Double soilStor;
+    
+    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
+            description = "runoff value read from comparison file")
+    public static Attribute.Double runoff;
 
     @JAMSVarDescription(
-            access = JAMSVarDescription.AccessType.READ, //gemessener Abfluss?
+            access = JAMSVarDescription.AccessType.READ, 
             description = "Simulated runoff",
             lowerBound = 0,
             upperBound = Double.POSITIVE_INFINITY
@@ -61,12 +69,18 @@ public class DataWriter extends JAMSComponent {
     @Override
     public void init() {
 
+        Double relET = precip.getValue()-runoff.getValue();
+        Double snowMelt = soilStor.getValue() - snowStor.getValue();
+        
         //Erstelle Liste aller notwendigen Werte
         List<Double> values = new ArrayList<Double>();
         values.add(precip.getValue());
+        values.add(runoff.getValue());
         values.add(simRunoff.getValue());
         values.add(snowStor.getValue());
+        values.add(snowMelt);
         values.add(baseStor.getValue());
+        values.add(relET);
         values.add(ET.getValue());
 
         //Speichere Datum und Werte in Hashmap mit Datum als Schlüssel
@@ -102,11 +116,12 @@ public class DataWriter extends JAMSComponent {
             bw.newLine();
             bw.write("#date of calculation: " + dtf.format(current));
             bw.newLine();
-            bw.write("#date percip simRunoff runoff snowStor snowMelt baseStor potET realET");
+            bw.write("#date percip runoff simRunoff snowStor snowMelt baseStor realET potET");
             bw.newLine();
 
             //Iteration über alle Map-Elemente
             for (Map.Entry<String, List<Double>> entry : num.entrySet()) {
+                //Datum und dazugehörige Werte in eine Zeile schreiben
                 bw.write(entry.getKey() + " " + entry.getValue());
                 bw.newLine();
             }
