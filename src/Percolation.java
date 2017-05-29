@@ -64,6 +64,10 @@ public class Percolation extends JAMSComponent{
 
     @Override
     public void run() {
+        /***
+         * Setzen und Reduktion der Speicherwerte und Abflüsse
+         */
+        
         soilRunoff.setValue(soilStor.getValue() * b.getValue());
         baseStor.setValue(soilStor.getValue() - soilRunoff.getValue());
         baseRunoff.setValue(baseStor.getValue() * c.getValue());

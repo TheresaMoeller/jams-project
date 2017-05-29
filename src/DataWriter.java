@@ -69,7 +69,7 @@ public class DataWriter extends JAMSComponent {
         values.add(baseStor.getValue());
         values.add(ET.getValue());
 
-        //Speichere Datum und Werte in Hashmap
+        //Speichere Datum und Werte in Hashmap mit Datum als Schlüssel
         num.put(date.toString(), values);
     }
 
@@ -85,9 +85,11 @@ public class DataWriter extends JAMSComponent {
             getModel().getRuntime().sendHalt("An error occured. Couldn't create file " + outfile.getValue() + ". Aborting.");
         }
 
+        // Writer anlegen um Datei zu beschreiben
         BufferedWriter bw = null;
         FileWriter fw = null;
 
+        //Datumsformat festlegen (Datum erscheint im Dateikopf)
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime current = LocalDateTime.now();
 
@@ -98,7 +100,7 @@ public class DataWriter extends JAMSComponent {
             //Schreibe Kopf der Outputdatei
             bw.write("# Results of JAMS Runoff Model");
             bw.newLine();
-            bw.write("#date: " + dtf.format(current));
+            bw.write("#date of calculation: " + dtf.format(current));
             bw.newLine();
             bw.write("#date percip simRunoff runoff snowStor snowMelt baseStor potET realET");
             bw.newLine();

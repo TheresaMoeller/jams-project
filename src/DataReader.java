@@ -116,23 +116,17 @@ public class DataReader extends JAMSComponent {
                     StringTokenizer st = new StringTokenizer(line);
                     InputData dataset = new InputData();
                     int x = 0;
-                    String token = st.nextToken();//.split(".")[1];
+                    String token = st.nextToken();
                     List<Double> val = new ArrayList<Double>();
                     dataset.setDate(token);
-                    //Monat auslesen
-//                    if (token.startsWith("0")){
-//                        CharacterIterator cIter = new StringCharacterIterator(token) ;
-//                        char ch = cIter.last() ;
-//                        dataset[0] = (double) Character.digit(ch, 10);
-//                    } else {
-//                        dataset[0] = Double.parseDouble(token);
-//                    }
-                    //Bis zum Ende der Zeile trage alle Werte einzeln in die Liste dataset ein
+
+                    //Füge alle restlichen Werte in die values Liste ein
                     while(st.hasMoreTokens()){
                         token = st.nextToken();
                         val.add(Double.parseDouble(token));
                         x++;
                     }
+                    
                     //Füge die Liste zur ArrayList hinzu
                     dataset.setValues(val);
                     data.add(dataset);

@@ -52,11 +52,19 @@ public class Runoff extends JAMSComponent{
     
     @Override
     public void init() {  
+        /***
+         * Berechnung des Oberflächenabflusses
+         */
+        
         depRunoff.setValue(depStor.getValue() * a.getValue());
     }
 
     @Override
     public void run() {
+        /***
+         * Berechnung des Gesamtabflusses aus den einzel Abflüssen
+         */
+        
         simRunoff.setValue(depRunoff.getValue() + soilRunoff.getValue() + baseRunoff.getValue());
     }
 
