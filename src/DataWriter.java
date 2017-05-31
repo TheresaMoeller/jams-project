@@ -30,6 +30,15 @@ public class DataWriter extends JAMSComponent {
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
             description = "Month")
     public static Attribute.String date;
+    
+    @JAMSVarDescription (access = JAMSVarDescription.AccessType.READ, ??//eingefügt, okay?
+                         description = "Aktueller Zeitschritt im Modell ??")
+    public Attribute.?? time;
+     
+    @JAMSVarDescription (access = JAMSVarDescription.AccessType.READ, ??//eingefügt, okay?
+                         description = "Aktuelles Zeitintervall im Modell (ist das Zeit-"
+                                 + "intervall monatlich oder täglich) ?")
+    public Attribute.?? timeInt;
 
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
             description = "Precip value read from file")
@@ -59,6 +68,10 @@ public class DataWriter extends JAMSComponent {
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
             description = "Precip value read from file")
     public static Attribute.Double baseStor;
+    
+    @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,  ??//eingefügt, okay?
+            description = "Amount of snowmelt")
+    public Attribute.Double snowMelt;
 
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ, //aktuelle Verdunstung
             description = "Precip value read from file")
@@ -83,6 +96,8 @@ public class DataWriter extends JAMSComponent {
         values.add(relET);
         values.add(ET.getValue());
 
+        ? time, timeInt addieren?;
+                
         //Speichere Datum und Werte in Hashmap mit Datum als Schlüssel
         num.put(date.toString(), values);
     }

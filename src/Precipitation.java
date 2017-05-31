@@ -22,7 +22,7 @@ public class Precipitation extends JAMSComponent {
      *  Component attributes
      */
     
-    @JAMSVarDescription( //
+    @JAMSVarDescription( 
             access = JAMSVarDescription.AccessType.READ,       
             description = "Temperature limit value for snowfall, calibration factor",                 
             unit = "°C",                                     
@@ -50,7 +50,7 @@ public class Precipitation extends JAMSComponent {
     public Attribute.Double mintemp;
 
     
-     @JAMSVarDescription(
+    @JAMSVarDescription(
             access = JAMSVarDescription.AccessType.READ,
             description = "Mean day temperature",
             unit = "°C",
