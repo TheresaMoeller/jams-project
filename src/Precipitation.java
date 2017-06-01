@@ -1,3 +1,4 @@
+import jams.JAMS;
 import jams.data.*;
 import jams.model.*;
 
@@ -68,6 +69,16 @@ public class Precipitation extends JAMSComponent {
             upperBound = Double.POSITIVE_INFINITY
     )
     public Attribute.Double precip;
+    
+    
+    @JAMSVarDescription(
+        access = JAMSVarDescription.AccessType.READ,
+        description = "Filling of the soil storage at beginning of model run",
+        lowerBound = 0,
+        upperBound = Double.POSITIVE_INFINITY,
+        unit = "mm"
+        )
+        public Attribute.Double initSoilStor; ?//raus?
  
     
     @JAMSVarDescription(
@@ -88,6 +99,16 @@ public class Precipitation extends JAMSComponent {
             upperBound = Double.POSITIVE_INFINITY
     )
     public Attribute.Double precip_rain;
+    
+    
+     @JAMSVarDescription(
+        access = JAMSVarDescription.AccessType.WRITE,
+        description = "Filling of the soil storage after time step",
+        lowerBound = 0,
+        upperBound = Double.POSITIVE_INFINITY,
+        unit = "mm"
+        )
+        public Attribute.Double soilStor; ?//raus?
      
     /*
      *  Component run stages
@@ -95,6 +116,10 @@ public class Precipitation extends JAMSComponent {
     
     @Override
     public void init() {
+        if (this.initSoilStor == null)   ?//raus?
+            getModel().getRuntime().sendHalt(JAMS.i18n("parameter_ABCModel_initStorage_unspecified"));
+        else
+            soilStor.setValue(initSoilStor.getValue());
     }
 
     @Override
@@ -108,6 +133,7 @@ public class Precipitation extends JAMSComponent {
         double proportion;
         double snow_amount; 
         double rain_amount; 
+        double soilStor = this.soilStor.getValue(); ?//raus?
         
          
         if (p > 0) { //precipitation occurs
@@ -133,6 +159,7 @@ public class Precipitation extends JAMSComponent {
         //write obtained values
         precip_rain.setValue(rain_amount);  //weiter in Komponente Perkolation?
         precip_snow.setValue(snow_amount);
+        this.soilStor.setValue(soilStor); ?//raus?
         
     }
 
@@ -140,3 +167,10 @@ public class Precipitation extends JAMSComponent {
     public void cleanup() {
     }
 }
+
+
+?// SoilStor kann nicht berechnet werden, da Verdunstung abgezogen werden muss
+?// woher weiß man, dass Bodenspeicher voll ist und Wasser in Muldenspeicher übergeht? (Sättigungswert?)
+?// hat soilStor Kapazität : nimmt Regen + Schmelzwasser auf (abzüglich Verdunstung)
+
+/

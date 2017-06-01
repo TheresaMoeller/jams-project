@@ -1,3 +1,4 @@
+import jams.JAMS;
 import jams.data.*;
 import jams.model.*;
 
@@ -29,7 +30,7 @@ public class Snowmelt extends JAMSComponent {
             lowerBound = Double.NEGATIVE_INFINITY,                                      
             upperBound = Double.POSITIVE_INFINITY                                                                          
     )
-            public Attribute.Double baseTemp;              
+    public Attribute.Double baseTemp;              
 
     
     @JAMSVarDescription(
@@ -39,7 +40,7 @@ public class Snowmelt extends JAMSComponent {
             lowerBound = Double.NEGATIVE_INFINITY,
             upperBound = Double.POSITIVE_INFINITY
     )
-            public Attribute.Double meantemp;
+    public Attribute.Double meantemp;
     
     
     @JAMSVarDescription(
@@ -71,7 +72,7 @@ public class Snowmelt extends JAMSComponent {
             lowerBound = Double.NEGATIVE_INFINITY,
             upperBound = Double.POSITIVE_INFINITY
     )
-   public Attribute.Double ddf; 
+    public Attribute.Double ddf; 
      
     
     @JAMSVarDescription(
@@ -87,17 +88,57 @@ public class Snowmelt extends JAMSComponent {
     )
     public Attribute.?? timeInt //? 
  
+
+@JAMSVarDescription(
+        access = JAMSVarDescription.AccessType.READ,
+        description = "Filling of the snow storage at beginning of model run",
+        lowerBound = 0,
+        upperBound = Double.POSITIVE_INFINITY,
+        unit = "mm"
+    )
+    public Attribute.Double initSnowStor; 
         
+
+@JAMSVarDescription(
+        access = JAMSVarDescription.AccessType.READ,
+        description = "Precipitation as snow",
+        unit = "mm",
+        lowerBound = 0,
+        upperBound = Double.POSITIVE_INFINITY
+    )
+    public Attribute.Double precip_snow;
+
+
 @JAMSVarDescription(
             access = JAMSVarDescription.AccessType.WRITE,
-            description = "Potential amount of snowmelt, total snowmelt rate",
+            description = "Potential amount of snowmelt/ snowmelt rate",
             unit = "mm/d",
             lowerBound = Double.NEGATIVE_INFINITY,
             upperBound = Double.POSITIVE_INFINITY
     )
     public Attribute.Double snowMelt;
+
+
+@JAMSVarDescription(
+        access = JAMSVarDescription.AccessType.WRITE,
+        description = "Filling of the snow storage after time step",
+        lowerBound = 0,
+        upperBound = Double.POSITIVE_INFINITY,
+        unit = "mm"
+    )
+    public Attribute.Double snowStor;  
+
+
+@JAMSVarDescription(
+        access = JAMSVarDescription.AccessType.WRITE,
+        description = "Effective amount of snowmelt/ snowmelt rate",
+        lowerBound = 0,
+        upperBound = Double.POSITIVE_INFINITY,
+        unit = "mm"
+    )
+    public Attribute.Double eff_snowMelt;
  
- 
+
     private double timeunit; ? //Variable zum Speichern des Zeitintervalls im Modell ?
  
    /*
@@ -108,11 +149,24 @@ public class Snowmelt extends JAMSComponent {
     @Override
     public void init() {
        
-        timeunit = this.timeInt.getTimeUnit;         
+        timeunit = this.timeInt.getTimeUnit;          //Zeitintervall (täglich oder monatlich
+        
+        if (this.initSnowStor == null)
+            getModel().getRuntime().sendHalt(JAMS.i18n("parameter initSnowStor unspecified"));
+        else
+            snowStor.setValue(initSnowStor.getValue());
+        
     }
  
     @Override
     public void run() {
+        
+        if (this.precip_snow == null)
+            getModel().getRuntime().sendHalt(JAMS.i18n("input data precip_snow unspecified"));
+        
+        if (this.snowMelt == null)
+            getModel().getRuntime().sendHalt(JAMS.i18n("parameter snowMelt unspecified"));
+        
         double bT = this.baseTemp.getValue();
         double meanT = this.meantemp.getValue();
         double maxT = this.maxtemp.getValue();
@@ -120,6 +174,10 @@ public class Snowmelt extends JAMSComponent {
         double meltT = this.meltTemp.getValue();
         double averageT = 0.5 * (meanT + maxT); // daily average temperature (mean of meanT and maxT)
         double snowmelt_amount;
+        double snowStor = this.snowStor.getValue();
+        double snow = this.precip_snow.getValue();
+        double snowMelt = this.snowMelt.getValue();
+        double snowMelt_eff;
          
         // If the average temperture is higher than the melting temperature, 
         // then the potential snowmelt amount can be calculated by using ddf, 
@@ -133,6 +191,19 @@ public class Snowmelt extends JAMSComponent {
         snowmelt_amount = 0;    
         }
         
+                     
+        // Calculation snowStor and snowMelt_eff from snowMelt and precip_snow 
+        snowStor = snowStor + snow;
+        
+        if (snowMelt <= snowStor) { //some snow of the snowStor melts
+            snowMelt_eff = snowMelt;
+            snowStor = snowStor - snowMelt;
+        } 
+        else { //whole snowStor melts
+            snowMelt_eff = snowStor;
+            snowStor = 0;
+        }
+        
         //write values
         if Zeitintervall (tu) ist täglich { ?//wie definieren?
             snowMelt.setValue(snowmelt_amount); // potenzielle Verdunstungsmenge
@@ -140,7 +211,9 @@ public class Snowmelt extends JAMSComponent {
         else if Zeitintervall (tu) ist monatlich {  ?//wie definieren?
             snowMelt.setValue(snowmelt_amount * this.time.getActualMaximum(Attribute.??)); ?? //tägliche Werte irgendwie summieren?
         }
-         
+       
+        this.snowStor.setValue(snowStor);
+        this.eff_snowMelt.setValue(snowMelt_eff);
     }
 
     @Override
@@ -149,4 +222,4 @@ public class Snowmelt extends JAMSComponent {
 }
 
 
-// Ermittlung der tatsächlichen Schneeschmelzmenge fehlt
+?// später für Infiltration: Schneeschmelze zu Boden- und Muldenspeicher dazurechnen
