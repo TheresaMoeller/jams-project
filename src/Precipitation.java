@@ -131,8 +131,8 @@ public class Precipitation extends JAMSComponent {
         }
      
         //write obtained values
-        precip_rain.setValue(snow_amount);
-        precip_snow.setValue(rain_amount);
+        precip_rain.setValue(rain_amount);  //weiter in Komponente Perkolation?
+        precip_snow.setValue(snow_amount);
         
     }
 

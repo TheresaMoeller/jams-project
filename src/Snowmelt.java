@@ -83,14 +83,14 @@ public class Snowmelt extends JAMSComponent {
             
 @JAMSVarDescription(
             access = JAMSVarDescription.AccessType.READ,
-            description = //Zeitschritt und Zeitraum des Modells
+            description = "time interval, for which the model should be executed" //Zeitschritt und Zeitraum des Modells
     )
     public Attribute.?? timeInt //? 
  
         
 @JAMSVarDescription(
             access = JAMSVarDescription.AccessType.WRITE,
-            description = "Amount of snowmelt",
+            description = "Potential amount of snowmelt, total snowmelt rate",
             unit = "mm/d",
             lowerBound = Double.NEGATIVE_INFINITY,
             upperBound = Double.POSITIVE_INFINITY
@@ -122,16 +122,18 @@ public class Snowmelt extends JAMSComponent {
         double snowmelt_amount;
          
         // If the average temperture is higher than the melting temperature, 
-        // then the potential snowmelt amount can be calculated by using ddf and the average temperature
-        // Die Berechnung erfolgt mithilfe der Basistemperatur? nochmal nachschauen!
+        // then the potential snowmelt amount can be calculated by using ddf, 
+        // the base temperature and the average temperature
+        // http://www.tandfonline.com/doi/pdf/10.1080/02626668909491333
         
         if (averageT > meltT){
-        snowmelt_amount = DDF *(averageT - bTemp);    ??nochmal nachschauen ;
+        snowmelt_amount = DDF *(averageT - bTemp);   
         }
         else {
         snowmelt_amount = 0;    
         }
-         
+        
+        //write values
         if Zeitintervall (tu) ist täglich { ?//wie definieren?
             snowMelt.setValue(snowmelt_amount); // potenzielle Verdunstungsmenge
         }
@@ -145,3 +147,6 @@ public class Snowmelt extends JAMSComponent {
     public void cleanup() {
     }
 }
+
+
+// Ermittlung der tatsächlichen Schneeschmelzmenge fehlt
