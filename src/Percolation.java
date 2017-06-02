@@ -23,24 +23,32 @@ import jams.model.*;
 public class Percolation extends JAMSComponent{
     
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READWRITE,
-            description = "Soil storage")
+            description = "Soil storage",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double soilStor;
     
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,
-            description = "Base storage")
+            description = "Base storage",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double baseStor;
     
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,
-            description = "Soil runoff")
+            description = "Soil runoff",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double soilRunoff;
     
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,
-            description = "base runoff")
+            description = "base runoff",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double baseRunoff;
     
     @JAMSVarDescription(
     access = JAMSVarDescription.AccessType.READ,
-            description = "Parameter b",
+            description = "Calibration factor soil runoff",
             lowerBound = 0,
             upperBound = 1
             )
@@ -48,7 +56,7 @@ public class Percolation extends JAMSComponent{
     
     @JAMSVarDescription(
     access = JAMSVarDescription.AccessType.READ,
-            description = "Parameter c",
+            description = "Calibration factor base runoff",
             lowerBound = 0,
             upperBound = 1
             )
@@ -60,6 +68,7 @@ public class Percolation extends JAMSComponent{
     
     @Override
     public void init() {  
+        this.getModel().getRuntime().println("--- Percolation Component is running ---");
     }
 
     @Override
@@ -68,10 +77,13 @@ public class Percolation extends JAMSComponent{
          * Setzen und Reduktion der Speicherwerte und Abflüsse
          */
         
-        soilRunoff.setValue(soilStor.getValue() * b.getValue());
-        baseStor.setValue(soilStor.getValue() - soilRunoff.getValue());
-        baseRunoff.setValue(baseStor.getValue() * c.getValue());
-        baseStor.setValue(baseStor.getValue() - baseRunoff.getValue());
+        //wird der Bodenspeicher 0?
+        soilRunoff.setValue(soilStor.getValue() * b.getValue()); //calculate soil runoff
+        
+        //geht alles aus soil in base? weiterer Kalibrierungsfaktor?
+        baseStor.setValue(soilStor.getValue() - soilRunoff.getValue()); //calculate base storage
+        baseRunoff.setValue(baseStor.getValue() * c.getValue()); //calculate base runoff
+        baseStor.setValue(baseStor.getValue() - baseRunoff.getValue()); //update base storage
     }
 
     @Override

@@ -5,6 +5,7 @@ import static java.lang.Math.E;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -27,32 +28,47 @@ import java.util.regex.Pattern;
 
 public class Evaporation extends JAMSComponent {
 
-    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READWRITE,
-            description = "Old soil storage")
+    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
+            description = "Date of meassure")
+    public Attribute.Calendar date;
+    
+    @JAMSVarDescription(
+            access = JAMSVarDescription.AccessType.READWRITE,
+            description = "Soil Storage",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY          
+            )
     public Attribute.Double soilStor;
 
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
-            description = "Mean temperature")
+            description = "Mean temperature",
+            unit = "°C",
+            lowerBound = Double.NEGATIVE_INFINITY,
+            upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double meantemp;
+    
+    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
+            description = "Maximum temperature",
+            unit = "°C",
+            lowerBound = Double.NEGATIVE_INFINITY,
+            upperBound = Double.POSITIVE_INFINITY)
+    public Attribute.Double maxtemp;
 
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
             description = "Relative humidity")
     public Attribute.Double relhum;
 
-    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
-            description = "Maximum temperature")
-    public Attribute.Double maxtemp;
-
-    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
-            description = "Month of meassure")
-    public Attribute.String date;
+    @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,
+            description = "Potential evaporation",
+            unit = "mm/d",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
+    public Attribute.Double potET;
 
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,
-            description = "Potential evaporation")
-    public Attribute.Double ET;
-
-    @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,
-            description = "Calibration factor")
+            description = "Calibration factor",
+            lowerBound = 0,
+            upperBound = 1)
     public Attribute.Double w;
 
     Double potEv;
@@ -63,10 +79,12 @@ public class Evaporation extends JAMSComponent {
     @Override
     public void init() {
         /***
-        * Berechnung der potentiellen Evapotranspiration nach Haude
+        * Calculation of potential evaporation (HAUDE)
         */
         
-        // Create List of Haude factors (landuse spruce)
+        this.getModel().getRuntime().println("--- Starting evaporation calculation ---");
+        
+        // Create List of Haude factors (only for landuse spruce)
         List<Double> k = new ArrayList<Double>();
         k.add(0.08); //january
         k.add(0.04); //february
@@ -81,35 +99,24 @@ public class Evaporation extends JAMSComponent {
         k.add(0.07); //november
         k.add(0.05); //december
 
+        //calculate relative humidity at 2pm
         Double relhum14;
         relhum14 = (calcTemp(meantemp.getValue()) * relhum.getValue()) / calcTemp(maxtemp.getValue());
+        
+        //get month of meassurement
+        int mon = date.get(Calendar.MONTH);
 
-        String mon = date.toString().split(Pattern.quote("."))[1];
-
-        int month;
-
-        if (mon.startsWith("0")) {
-            CharacterIterator cIter = new StringCharacterIterator(date.toString());
-            char ch = cIter.last();
-            month = (int) Character.digit(ch, 10);
-        } else {
-            month = Integer.parseInt(mon);
-        }
-
-        int x = (int) month - 1;
-        potEv = k.get(x) * calcVapourPressure(meantemp.getValue()) * (1 - relhum14) * w.getValue();
+        //calculate potential evaporation
+        potEv = k.get(mon) * calcVapourPressure(meantemp.getValue()) * (1 - relhum14) * w.getValue();
 
     }
 
     @Override
     public void run() {
         /***
-         * Setze Wert für potentielle Evapotranspiration und reduziere den alten
-         * Bodenspeicher um diesen Wert.
-         */
-        
-        
-        ET.setValue(potEv);
+         * Setting value of potential evaporation, reducing old soil storage
+         */ 
+        potET.setValue(potEv);
         soilStor.setValue(soilStor.getValue() - potEv);
     }
 
@@ -119,7 +126,7 @@ public class Evaporation extends JAMSComponent {
 
     public Double calcVapourPressure(Double temp) {
         /***
-         * Berechnung des Sättigungsdampfdrucks
+         * Calculating vapour pressure
          */
         
         Double v = (17.62 * temp) / (243.12 + temp);
@@ -129,7 +136,7 @@ public class Evaporation extends JAMSComponent {
 
     public Double calcTemp(Double temp) {
         /***
-         * Berechnung der Temperatur
+         * Calculating temperature for  ETP calculation
          */
         
         Double t = calcVapourPressure(temp) * (216.7 / (temp + 273.15));

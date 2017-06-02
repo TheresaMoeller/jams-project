@@ -14,25 +14,33 @@ import jams.model.*;
  */
 public class Runoff extends JAMSComponent{
     
-    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
-            description = "dep storage")
+    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READWRITE,
+            description = "depression storage",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double depStor;
     
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READWRITE,
-            description = "dep runoff")
+            description = "dep runoff",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double depRunoff;
     
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
-            description = "soil runoff")
+            description = "soil runoff",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double soilRunoff;
     
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
-            description = "base runoff")
+            description = "base runoff",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double baseRunoff;
     
     @JAMSVarDescription(
     access = JAMSVarDescription.AccessType.READ,
-            description = "Parameter a",
+            description = "Calibration factor surface runoff",
             lowerBound = 0,
             upperBound = 1
             )
@@ -53,18 +61,20 @@ public class Runoff extends JAMSComponent{
     @Override
     public void init() {  
         /***
-         * Berechnung des Oberflächenabflusses
+         * Status print
          */
-        
-        depRunoff.setValue(depStor.getValue() * a.getValue());
+        this.getModel().getRuntime().println("--- Runoff Component is running ---");
     }
 
     @Override
     public void run() {
         /***
-         * Berechnung des Gesamtabflusses aus den einzel Abflüssen
+         * calculation of simulated runoff
          */
         
+        //calculate depression runoff
+        depRunoff.setValue(depStor.getValue() * a.getValue());
+        //calculate over all runoff
         simRunoff.setValue(depRunoff.getValue() + soilRunoff.getValue() + baseRunoff.getValue());
     }
 
