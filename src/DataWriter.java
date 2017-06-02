@@ -31,18 +31,18 @@ public class DataWriter extends JAMSComponent {
             description = "Month")
     public static Attribute.String date;
     
-    @JAMSVarDescription (access = JAMSVarDescription.AccessType.READ, ??//eingefügt, okay?
-                         description = "Aktueller Zeitschritt im Modell ??")
-    public Attribute.?? time;
+//    @JAMSVarDescription (access = JAMSVarDescription.AccessType.READ, ??//eingefügt, okay?
+//                         description = "Aktueller Zeitschritt im Modell ??")
+//    public Attribute.?? time;
      
-    @JAMSVarDescription (access = JAMSVarDescription.AccessType.READ, ??//eingefügt, okay?
-                         description = "Aktuelles Zeitintervall im Modell (ist das Zeit-"
-                                 + "intervall monatlich oder täglich) ?")
-    public Attribute.?? timeInt;
+//    @JAMSVarDescription (access = JAMSVarDescription.AccessType.READ, ??//eingefügt, okay?
+//                         description = "Aktuelles Zeitintervall im Modell (ist das Zeit-"
+//                                 + "intervall monatlich oder täglich) ?")
+//    public Attribute.?? timeInt;
 
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
             description = "Precip value read from file")
-    public static Attribute.Double precip;
+    public static Attribute.Double precip;  ?//oder unterteilt in precip_rain + precip_snow?
     
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
             description = "Soil storage value read from file")
@@ -69,10 +69,14 @@ public class DataWriter extends JAMSComponent {
             description = "Precip value read from file")
     public static Attribute.Double baseStor;
     
-    @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,  ??//eingefügt, okay?
-            description = "Amount of snowmelt")
-    public Attribute.Double snowMelt;
-
+//    @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,  
+//            description = "Potential amount of snowmelt/ snowmelt rate")
+//    public Attribute.Double snowMelt;
+//    
+//    @JAMSVarDescription(access = JAMSVarDescription.AccessType.WRITE,  
+//            description = "Effective amount of snowmelt/ snowmelt rate")
+//    public Attribute.Double eff_snowMelt;
+    
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ, //aktuelle Verdunstung
             description = "Precip value read from file")
     public static Attribute.Double ET;
@@ -91,12 +95,12 @@ public class DataWriter extends JAMSComponent {
         values.add(runoff.getValue());
         values.add(simRunoff.getValue());
         values.add(snowStor.getValue());
-        values.add(snowMelt);
+        values.add(snowMelt); ? //
         values.add(baseStor.getValue());
         values.add(relET);
         values.add(ET.getValue());
 
-        ? time, timeInt addieren?;
+        ? time, timeInt, eff_snowMelt addieren?;
                 
         //Speichere Datum und Werte in Hashmap mit Datum als Schlüssel
         num.put(date.toString(), values);
