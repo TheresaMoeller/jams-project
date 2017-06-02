@@ -78,7 +78,7 @@ public class Precipitation extends JAMSComponent {
         upperBound = Double.POSITIVE_INFINITY,
         unit = "mm"
         )
-        public Attribute.Double initSoilStor; ?//raus?
+        public Attribute.Double initSoilStor; 
  
         
     @JAMSVarDescription(
@@ -88,7 +88,7 @@ public class Precipitation extends JAMSComponent {
         upperBound = Double.POSITIVE_INFINITY,
         unit = "mm"
         )
-        public Attribute.Double initSnowStor;  ?//raus?
+        public Attribute.Double initSnowStor;  
     
        
     @JAMSVarDescription(
@@ -98,7 +98,7 @@ public class Precipitation extends JAMSComponent {
         upperBound = Double.POSITIVE_INFINITY,
         unit = "mm"
         )
-        public Attribute.Double initDepStor;  ?//raus?
+        public Attribute.Double initDepStor;  
     
     @JAMSVarDescription(
         access = JAMSVarDescription.AccessType.READ,
@@ -108,7 +108,7 @@ public class Precipitation extends JAMSComponent {
         upperBound = Double.POSITIVE_INFINITY,
         unit = "mm"
         )
-        public Attribute.Double satValue;    !//muss in JAMs gesetzt werden!  ?raus?
+        public Attribute.Double satValue;   // !//Kalibrationsfaktor
      
     
     @JAMSVarDescription(
@@ -138,7 +138,7 @@ public class Precipitation extends JAMSComponent {
         upperBound = Double.POSITIVE_INFINITY,
         unit = "mm"
         )
-        public Attribute.Double soilStor; ?//raus?
+        public Attribute.Double soilStor; 
     
     
     @JAMSVarDescription(
@@ -148,7 +148,8 @@ public class Precipitation extends JAMSComponent {
         upperBound = Double.POSITIVE_INFINITY,
         unit = "mm"
     )
-    public Attribute.Double snowStor;  ?//raus?
+    public Attribute.Double snowStor;  
+   
     
     
     @JAMSVarDescription(
@@ -158,7 +159,7 @@ public class Precipitation extends JAMSComponent {
         upperBound = Double.POSITIVE_INFINITY,
         unit = "mm"
         )
-        public Attribute.Double depStor;  ?//raus?
+        public Attribute.Double depStor; 
 
     
     /*
@@ -168,39 +169,39 @@ public class Precipitation extends JAMSComponent {
     @Override
     public void init() {
         
-        //Check if needed values are existing + set initial storages before first model run
-        if (this.initSoilStor == null)   ?//raus?
-            getModel().getRuntime().sendHalt(JAMS.i18n("parameter_Precipitation_initSoilStor_unspecified"));
-        else
-            soilStor.setValue(initSoilStor.getValue());
-        
-        if (this.initSnowStor == null)  ?//raus?
-            getModel().getRuntime().sendHalt(JAMS.i18n("parameter_Precipitation_initSnowStor_unspecified"));
-        else
-            snowStor.setValue(initSnowStor.getValue());
-        
-        if (this.initDepStor == null)   ?//raus?
-            getModel().getRuntime().sendHalt(JAMS.i18n("parameter_Precipitation_initDepStor_unspecified"));
-        else
-            depStor.setValue(initDepStor.getValue());
-        
-        if (this.satValue == null)  ?//raus?
-            getModel().getRuntime().sendHalt(JAMS.i18n("parameter_Precipitation_satValue_unspecified"));
+//        //Check if needed values are existing + set initial storages before first model run
+//        if (this.initSoilStor == null)   
+//            getModel().getRuntime().sendHalt(JAMS.i18n("parameter_Precipitation_initSoilStor_unspecified"));
+//        else
+//            soilStor.setValue(initSoilStor.getValue());
+//        
+//        if (this.initSnowStor == null)  
+//            getModel().getRuntime().sendHalt(JAMS.i18n("parameter_Precipitation_initSnowStor_unspecified"));
+//        else
+//            snowStor.setValue(initSnowStor.getValue());
+//        
+//        if (this.initDepStor == null)   
+//            getModel().getRuntime().sendHalt(JAMS.i18n("parameter_Precipitation_initDepStor_unspecified"));
+//        else
+//            depStor.setValue(initDepStor.getValue());
+//        
+//        if (this.satValue == null)  
+//            getModel().getRuntime().sendHalt(JAMS.i18n("parameter_Precipitation_satValue_unspecified"));
     }
 
     @Override
     public void run() {
         
         // if there are no values for a time step
-        if (this.precip_rain == null)  ?//raus?
-            getModel().getRuntime().sendHalt(JAMS.i18n("input_data_Precipitation_precip_rain_unspecified"));
-        if (this.precip_snow == null)   ?//raus?
-            getModel().getRuntime().sendHalt(JAMS.i18n("input_data_Precipitation_precip_snow_unspecified"));
-        
-        
+//        if (this.precip_rain == null)  ?//raus
+//            getModel().getRuntime().sendHalt(JAMS.i18n("input_data_Precipitation_precip_rain_unspecified"));
+//        if (this.precip_snow == null)   ?//raus?
+//            getModel().getRuntime().sendHalt(JAMS.i18n("input_data_Precipitation_precip_snow_unspecified"));
+//        
+//        
         // Take given values
             
-        double bT = this.baseTemp.getValue();
+        double bT = this.baseTemp.getValue(); //oder baseTemp.getValue()
         double tT = this.transTemp.getValue();
         double minT = this.mintemp.getValue();
         double meanT = this.meantemp.getValue();
@@ -209,12 +210,12 @@ public class Precipitation extends JAMSComponent {
         double proportion;
         double snow_amount; 
         double rain_amount; 
-        double soilStor = this.soilStor.getValue(); ?//raus?
-        double snowStor = this.snowStor.getValue(); ?//raus?
-        double depStor = this.depStor.getValue();   ?//raus?
-        double snow = this.precip_snow.getValue();  ?//raus?! siehe Calculation snowStor
-        double rain = this.precip_rain.getValue();  ?//raus?! siehe Calculation soilStor
-        double sat = this.satValue.getValue(); ? //raus?
+        double soilStor = this.soilStor.getValue(); 
+        double snowStor = this.snowStor.getValue(); 
+        double depStor = this.depStor.getValue();   
+        //double snow = this.precip_snow.getValue();  ?//raus?! siehe Calculation snowStor
+        //double rain = this.precip_rain.getValue();  ?//raus?! siehe Calculation soilStor
+        double sat = this.satValue.getValue(); 
         
          
         if (p > 0) { //precipitation occurs
@@ -238,12 +239,12 @@ public class Precipitation extends JAMSComponent {
         }
      
         // Calculation of snowStor 
-        snowStor = snowStor + snow_amount; //oder snowStor + snow ?  ??raus
+        snowStor = snowStor + snow_amount; 
         
         // Calculation of depStor and soilStor
         if (soilStor < sat){ //if soilStor is unsaturated
             soilStor = soilStor + rain_amount; //oder soilStor + rain
-            if (soilStor >= sat){  ?ist dieser Schritt nötig? //if soilStor is saturated afterwards 
+            if (soilStor >= sat){  //if soilStor is saturated afterwards 
                 depStor = depStor + (soilStor - sat); //excess water flows into depStor
                 soilStor = sat; //soilStor gets saturation value
             }            
@@ -257,9 +258,9 @@ public class Precipitation extends JAMSComponent {
         //Write obtained values
         precip_rain.setValue(rain_amount);  
         precip_snow.setValue(snow_amount);
-        this.soilStor.setValue(soilStor); ?//raus?
-        this.snowStor.setValue(snowStor); ?//raus?
-        this.depStor.setValue(depStor);   ?//raus?      
+        this.soilStor.setValue(soilStor); 
+        this.snowStor.setValue(snowStor); 
+        this.depStor.setValue(depStor);   
     }
 
     @Override
@@ -267,19 +268,15 @@ public class Precipitation extends JAMSComponent {
     }
 }
 
+//
+//
+//
+// // Ueberpruefung der Speicherstaende nach Abflussereignissen und bei Bedarf
+//        // zuruecksetzen der Fuellstaende auf 0, falls Werte negativ sind
+//        if (soilStorage < 0) {
+//            soilStorage = 0;
+//        }
+//        if (depStorage < 0) {
+//            depStorage = 0;
+//        }
 
-
-?// woher weiß man, dass Bodenspeicher voll ist und Wasser in Muldenspeicher übergeht? (Sättigungswert?)
-?// hat soilStor Kapazität : nimmt Regen + Schmelzwasser auf (abzüglich Verdunstung?)
-
- // Ueberpruefung der Speicherstaende nach Abflussereignissen und bei Bedarf
-        // zuruecksetzen der Fuellstaende auf 0, falls Werte negativ sind
-        if (soilStorage < 0) {
-            soilStorage = 0;
-        }
-        if (depStorage < 0) {
-            depStorage = 0;
-        }
-
-
-/
