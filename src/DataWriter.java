@@ -85,6 +85,12 @@ public class DataWriter extends JAMSComponent {
             lowerBound = 0,
             upperBound = Double.POSITIVE_INFINITY)
     public Attribute.Double snowMelt;
+    
+    @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
+            description = "effective amount of snow melt",
+            lowerBound = 0,
+            upperBound = Double.POSITIVE_INFINITY)
+    public Attribute.Double eff_snowMelt;
 
     @JAMSVarDescription(access = JAMSVarDescription.AccessType.READ,
             description = "Potential Evaporation",
@@ -107,6 +113,7 @@ public class DataWriter extends JAMSComponent {
         values.add(simRunoff.getValue());                   //simulated runoff
         values.add(snowStor.getValue());                    //snow storage
         values.add(snowMelt.getValue());                    //snow melt
+        values.add(eff_snowMelt.getValue());                //effective snow melt
         values.add(baseStor.getValue());                    //base storage
         values.add(precip.getValue()-obsRunoff.getValue()); //real evaporation as difference between precipitation and runoff
         values.add(potET.getValue());                       //potential evaporation
@@ -157,7 +164,7 @@ public class DataWriter extends JAMSComponent {
             bw.newLine();
             bw.write("#date of calculation: " + dtf.format(current));
             bw.newLine();
-            bw.write("#date percip runoff simRunoff snowStor snowMelt baseStor realET potET");
+            bw.write("#date percip obsRunoff simRunoff snowStor snowMelt eff_snowMelt baseStor realET potET");
             bw.newLine();
             bw.write("#start");
             bw.newLine();
